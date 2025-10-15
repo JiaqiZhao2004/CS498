@@ -64,13 +64,16 @@ Cluster Assignments:
 
    ```bash
    # For Rank 0:
-   ./glooHelper.sh -n 3 -P 1 -r 0 -e 1 -q <your question number (2 or 3)> -s ./run.py
+   ./glooHelper.sh -n 3 -P 1 -r 0 -e 1 -q 2 -s ./run.py
+   ./glooHelper.sh -n 3 -P 1 -r 0 -e 1 -q 3 -s ./run.py
 
    # For Rank 1:
-   ./glooHelper.sh -n 3 -P 1 -r 1 -e 1 -q <your question number (2 or 3)> -s ./run.py
+   ./glooHelper.sh -n 3 -P 1 -r 1 -e 1 -q 2 -s ./run.py
+   ./glooHelper.sh -n 3 -P 1 -r 1 -e 1 -q 3 -s ./run.py
 
    # For Rank 2:
-   ./glooHelper.sh -n 3 -P 1 -r 2 -e 1 -q <your question number (2 or 3)> -s ./run.py
+   ./glooHelper.sh -n 3 -P 1 -r 2 -e 1 -q 2 -s ./run.py
+   ./glooHelper.sh -n 3 -P 1 -r 2 -e 1 -q 3 -s ./run.py
    ```
 
 2. **command step by step:**

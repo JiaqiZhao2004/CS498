@@ -11,11 +11,13 @@ def server(params, opt, world):
     ##here, you should generate one big 1-D tensor containing all parameters to make the transfer process easy
     agg = flat_grad.clone() #agg as a aggregated counter to record sum gradients
 
-    #                                                                   #
-    #                                                                   #
     # your code here: receive gradients form worker, and add them to agg#
-    #                                                                   #
-    #                                                                   #
+    for i in range(1, world):
+        buf = torch.empty_like(agg)
+        dist.recv(buf, src=i)
+        agg.add_(buf)
+
+    agg.div_(world)
 
     synced_grads = _unflatten_dense_tensors(agg, [p.grad for p in params])
     # ---- set averaged grads locally & step ----
@@ -25,31 +27,25 @@ def server(params, opt, world):
 
     # ---- broadcast updated params for this subset ----
     flat_param = _flatten_dense_tensors([p.data for p in params]).contiguous()
-    #                                                                   #
-    #                                                                   #
     # your code here: send packed 1-D parameter tensor to all workers   #
-    #                                                                   #
-    #                                                                   #
+    dist.broadcast(flat_param, src=0)
+
 
 def worker(params):
     flat_grad = _flatten_dense_tensors([p.grad for p in params]).contiguous()
     # ---- push grads to server ----
 
-    #                                                                   #
-    #                                                                   #
     # your code here: send packed 1-D gradient to server
-    #                                                                   #
-    #                                                                   #
+    dist.send(flat_grad, dst=0)
 
     # ---- receive updated params, write into local model ----
     
-    #                                                                   #
-    #                                                                   #
     # your code here: please get correct 1-D packed parameter from server
     #           And then unpacked it and store in synced_params
-    #                                                                   #
-    synced_params = None #you should  assign correct value for synced_params#
+    flat_params = flat_grad.clone()
+    dist.recv(flat_params, src=0)
 
+    synced_params = _unflatten_dense_tensors(flat_params, [p.data for p in params])
 
     # ---- syncronize the parameters ----
     for p, s in zip(params, synced_params):
