@@ -64,7 +64,7 @@ def PS_grads_(model,world_size=None, rankid=None, opt=None):
     """
     world = world_size
     rank  = rankid
-    
+    print("world size", world, "rank", rank)
     # Fast path: single process
     if world == 1:
         opt.step()
