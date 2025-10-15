@@ -15,7 +15,6 @@ def server(params, opt, world):
     for i in range(1, world):
         buf = torch.empty_like(agg)
         dist.recv(buf, src=i)
-        print('server received')
         agg.add_(buf)
 
     agg.div_(world)
@@ -30,7 +29,6 @@ def server(params, opt, world):
     flat_param = _flatten_dense_tensors([p.data for p in params]).contiguous()
     # your code here: send packed 1-D parameter tensor to all workers   #
     dist.broadcast(flat_param, src=0)
-    print("server sent")
 
 
 def worker(params):
@@ -39,15 +37,13 @@ def worker(params):
 
     # your code here: send packed 1-D gradient to server
     dist.send(flat_grad, dst=0)
-    print('worker sent')
 
     # ---- receive updated params, write into local model ----
     
     # your code here: please get correct 1-D packed parameter from server
     #           And then unpacked it and store in synced_params
     flat_params = flat_grad.clone()
-    dist.recv(flat_params, src=0)
-    print('worker recieved')
+    dist.broadcast(flat_params, src=0)
 
     synced_params = _unflatten_dense_tensors(flat_params, [p.data for p in params])
 
@@ -64,7 +60,7 @@ def PS_grads_(model,world_size=None, rankid=None, opt=None):
     """
     world = world_size
     rank  = rankid
-    print("world size", world, "rank", rank)
+
     # Fast path: single process
     if world == 1:
         opt.step()
