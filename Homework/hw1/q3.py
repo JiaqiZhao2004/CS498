@@ -27,7 +27,7 @@ def reduce_scatter(chunks, tmp, world, rank, left, right):
         # rotate to send the just-updated chunk
         send_idx = recv_idx
         
-def all_gather(chunks, tmp, current, world, rank, left, right):
+def all_gather(chunks, tmp, world, rank, left, right):
     # your code here: follow slides instruction: do counter-clockwise iteration
 
     send_idx = (rank + 1) % world
